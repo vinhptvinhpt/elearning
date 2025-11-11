@@ -64,5 +64,6 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'clearance' => \App\Http\Middleware\ClearanceMiddleware::class,
+		'histaff.integration' => \App\Http\Middleware\HistaffIntegrationMiddleware::class,
     ];
 }

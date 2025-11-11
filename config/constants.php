@@ -56,7 +56,9 @@ return [
 
         'DOMAIN-COOKIE' => 'academy.phh-group.com',
 
-        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el','phh-group']
+        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el','phh-group'],
+		
+		'HISTAFF-INTEGRATION-ENABLED' => false, // Flag to enable/disable histaff integration
 
     ],
 ];

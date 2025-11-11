@@ -5342,7 +5342,10 @@ class BussinessRepository implements IBussinessInterface
             } else {
                 ModelHasRole::where('model_id', $user_id)->delete();
                 //remove role of user from table mdl_role_assignments for lms
-                MdlRoleAssignments::where('userid', $user_id)->delete();
+                MdlRoleAssignments::where([
+                    'userid' => $user_id,
+                    'contextid' => 1
+                ])->delete();
             }
 
             //            $checkStudent = false;

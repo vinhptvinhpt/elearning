@@ -1443,6 +1443,8 @@ class MailController extends Controller
                     'tms_user_detail.fullname',
                     'tms_user_detail.email'
                 )->where('working_status', '<>', 1)
+                // Check not deleted
+                ->where('deleted', '<>', 1)
                 //check not exist in table tms_nofitications
                 ->whereNotIn('tms_user_detail.user_id', function ($query) {
                     $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
@@ -2815,8 +2817,9 @@ class MailController extends Controller
 
     function cc($content) {
         $to = [
-            'dean@easia-travel.com',
-            'ngongoc@phh-group.com'
+            'training@easia-travel.com'
+            //'dean@easia-travel.com',
+            //'ngongoc@phh-group.com'
         ];
         foreach ($to as $item) {
             Mail::to($item)->send($content);

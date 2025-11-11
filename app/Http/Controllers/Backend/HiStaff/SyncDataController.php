@@ -17,11 +17,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use JWTAuth;
 use Mockery\Exception;
 
 class SyncDataController
 {
+    /**
+     * Check if histaff integration is enabled
+     *
+     * @return bool
+     */
+    private function isHistaffIntegrationEnabled()
+    {
+        return Config::get('constants.domain.HISTAFF-INTEGRATION-ENABLED', true);
+    }
+
+    /**
+     * Log histaff API call when integration is disabled
+     *
+     * @param Request $request
+     * @param string $action
+     * @return void
+     */
+    private function logDisabledHistaffCall(Request $request, string $action)
+    {
+        $logData = [
+            'timestamp' => now()->toDateTimeString(),
+            'action' => $action,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'headers' => $request->headers->all(),
+            'data' => $request->all(),
+            'message' => 'Histaff API call blocked - integration disabled'
+        ];
+        
+        Log::info('[HISTAFF_DISABLED] ' . $action . ' API call blocked', $logData);
+    }
+
     public function index(Request $request)
     {
         $username = $request->input('username');
@@ -32,6 +67,16 @@ class SyncDataController
     public function login(Request $request)
     {
         try {
+            // Check if histaff integration is enabled
+            if (!$this->isHistaffIntegrationEnabled()) {
+                $this->logDisabledHistaffCall($request, 'LOGIN');
+                return response()->json([
+                    'status' => 'SUCCESS',
+                    'message' => 'Histaff integration is disabled. Login request logged but no action taken.',
+                    'redirect_type' => 'lms'
+                ]);
+            }
+
             $username = $request->input('username');
             $token_histaff = $request->input('token_histaff');
             setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
@@ -149,6 +194,15 @@ class SyncDataController
     {
         $result = new ResultModel();
         try {
+            // Check if histaff integration is enabled
+            if (!$this->isHistaffIntegrationEnabled()) {
+                $this->logDisabledHistaffCall($request, 'SAVE_ORGANIZATION');
+                $result->code = 'HISTAFF_DISABLED';
+                $result->status = true;
+                $result->message = 'Histaff integration is disabled. Organization sync request logged but no action taken.';
+                return response()->json($result);
+            }
+
             $header = $request->header('X-App-Token');
             $token = $request->header('Authorization');
 
@@ -307,6 +361,15 @@ class SyncDataController
     {
         $result = new ResultModel();
         try {
+            // Check if histaff integration is enabled
+            if (!$this->isHistaffIntegrationEnabled()) {
+                $this->logDisabledHistaffCall($request, 'SAVE_USER');
+                $result->code = 'HISTAFF_DISABLED';
+                $result->status = true;
+                $result->message = 'Histaff integration is disabled. User sync request logged but no action taken.';
+                return response()->json($result);
+            }
+
             $header = $request->header('X-App-Token');
 
             $token = $request->header('Authorization');
@@ -614,5 +677,30 @@ class SyncDataController
             $result->message = $e->getMessage();
         }
         return response()->json($result);
+    }
+
+    /**
+     * Test API endpoint for histaff integration
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testAPI(Request $request)
+    {
+        // Check if histaff integration is enabled
+        if (!$this->isHistaffIntegrationEnabled()) {
+            $this->logDisabledHistaffCall($request, 'TEST_API');
+            return response()->json([
+                'status' => true,
+                'code' => 'HISTAFF_DISABLED',
+                'message' => 'Histaff integration is disabled. Test API request logged but no action taken.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'code' => 'SUCCESS',
+            'message' => 'Histaff integration is enabled and working properly.'
+        ]);
     }
 }

@@ -29,7 +29,7 @@ $file = isset($_FILES['file']) ? $_FILES['file'] : "";
 //type = get: get list
 if($type == 'get'){
     //get list videos with name in db
-    $sqlGetVideos = "select name, url, stream_link from tms_videolib where deleted = 0 and user_id=".$USER->id." order by id desc";
+    $sqlGetVideos = "select name, url, stream_link, created_at as upload_time from tms_videolib where deleted = 0 and user_id=".$USER->id." order by id desc";
     $videos = array_values($DB->get_records_sql($sqlGetVideos));
     //paging
     $total = count($videos); //total items in array
@@ -81,7 +81,7 @@ else{
             //$live_stream_link = VideoLibUtilities::getMediaLink($file["tmp_name"]);
             $live_stream_link = '';
             $urlVideo = $containerName."/".$nameFile;
-            $sql = "INSERT INTO tms_videolib(name, url, stream_link, user_id, deleted) VALUES('".$nameFile."', '".$urlVideo."', '".$live_stream_link."', ".$USER->id.", 0)";
+            $sql = "INSERT INTO tms_videolib(name, url, stream_link, user_id, deleted, created_at) VALUES('".$nameFile."', '".$urlVideo."', '".$live_stream_link."', ".$USER->id.", 0, NOW())";
             $DB->execute($sql);
             $res['result'] = 1;
         }

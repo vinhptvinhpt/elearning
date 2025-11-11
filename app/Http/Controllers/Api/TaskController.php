@@ -2391,7 +2391,6 @@ class TaskController extends Controller
                             '',
                             '',
                             '',
-                            '',
                             $link,
                             $user->password
                         ));
@@ -2414,7 +2413,7 @@ class TaskController extends Controller
 
     public function apiGenerateSASUrlAzure()
     {
-        $arrMainId = [33, 140, 141, 146, 171, 172];
+        $arrMainId = [33, 140, 141, 146, 171, 172, 153, 183, 165];
         $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->select('id', 'main_library_id', 'json_content')->get();
 
         foreach ($lstData as $data) {
@@ -2430,6 +2429,18 @@ class TaskController extends Controller
                     break;
                 case 146:
                     $this->processInteractive33($jsonData, $data->id);
+                    break;
+                case 153:
+                    $this->processInteractive153($jsonData, $data->id);
+                    break;
+                case 183:
+                    $this->processInteractive183($jsonData, $data->id);
+                    break;
+                case 176:
+                    $this->processInteractive176($jsonData, $data->id);
+                    break;
+                case 165:
+                    $this->processInteractive165($jsonData, $data->id);
                     break;
                 default:
                     $this->processInteractive140($jsonData, $data->id);
@@ -2555,6 +2566,142 @@ class TaskController extends Controller
                         $hvp->save();
 
                     }
+                } else if (isset($data_content['content']) && isset($data_content['content']['params'])
+                && isset($data_content['content']['params']['files']) && isset($data_content['content']['params']['files'][0])
+                && isset($data_content['content']['params']['files'][0]['path'])
+                ) {
+                    $path = $data_content['content']['params']['files'][0]['path'];
+
+                    if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                        $file_name = basename($path);
+
+                        $file_name_rp = str_replace('#', '?', $file_name);
+                        $arr_name = explode('?', $file_name_rp);
+
+                        $blob_name = $arr_name[0];
+                        //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                        $end_date = Carbon::now()->addMinute(3);
+                        //$end_date = Carbon::now()->addHour(23)->addMinute(59);
+                        // $end_date = Carbon::now()->addSecond(12);
+
+                        $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                        $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                        $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                        $data_content['content']['params']['files'][0]['path'] = $_blobUrl;
+
+
+                        $jsonData['content'][$key] = $data_content;
+                        usleep(100);
+
+                        $hvp = MdlHvp::findOrFail($id);
+                        $hvp->json_content = json_encode($jsonData);
+                        $hvp->filtered = json_encode($jsonData);
+                        $hvp->save();
+
+                    }
+                } else if (isset($data_content['content']) && isset($data_content['content']['params'])
+                && isset($data_content['content']['params']['hotspots']) && isset($data_content['content']['params']['hotspots'])
+                ) {
+                    // Handle image hotspots with audio content
+                    $hotspots = $data_content['content']['params']['hotspots'];
+                    $modified = false;
+
+                    foreach ($hotspots as $hotspotIndex => $hotspot) {
+                        if (isset($hotspot['content'])) {
+                            foreach ($hotspot['content'] as $contentIndex => $content) {
+                                if (isset($content['params']) && isset($content['params']['files']) 
+                                    && isset($content['params']['files'][0]) && isset($content['params']['files'][0]['path'])
+                                ) {
+                                    $path = $content['params']['files'][0]['path'];
+
+                                    if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                        $file_name = basename($path);
+
+                                        $file_name_rp = str_replace('#', '?', $file_name);
+                                        $arr_name = explode('?', $file_name_rp);
+
+                                        $blob_name = $arr_name[0];
+                                        //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                                        $end_date = Carbon::now()->addMinute(3);
+                                        //$end_date = Carbon::now()->addHour(23)->addMinute(59);
+                                        // $end_date = Carbon::now()->addSecond(12);
+
+                                        $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                                        $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                        $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                                        $data_content['content']['params']['hotspots'][$hotspotIndex]['content'][$contentIndex]['params']['files'][0]['path'] = $_blobUrl;
+                                        $modified = true;
+                                        usleep(100);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($modified) {
+                        $jsonData['content'][$key] = $data_content;
+                        usleep(100);
+
+                        $hvp = MdlHvp::findOrFail($id);
+                        $hvp->json_content = json_encode($jsonData);
+                        $hvp->filtered = json_encode($jsonData);
+                        $hvp->save();
+                    }
+                } else if (isset($data_content['content']) && isset($data_content['content']['params'])
+                && isset($data_content['content']['params']['presentation']) && isset($data_content['content']['params']['presentation']['slides'])
+                ) {
+                    // Handle interactive presentation (CoursePresentation)
+                    $slides = $data_content['content']['params']['presentation']['slides'];
+                    $modified = false;
+
+                    foreach ($slides as $slideIndex => $slide) {
+                        if (isset($slide['elements'])) {
+                            foreach ($slide['elements'] as $elementIndex => $element) {
+                                if (isset($element['action']) && isset($element['action']['params']) 
+                                    && isset($element['action']['params']['files']) && isset($element['action']['params']['files'][0])
+                                    && isset($element['action']['params']['files'][0]['path'])
+                                ) {
+                                    $path = $element['action']['params']['files'][0]['path'];
+
+                                    if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                        $file_name = basename($path);
+
+                                        $file_name_rp = str_replace('#', '?', $file_name);
+                                        $arr_name = explode('?', $file_name_rp);
+
+                                        $blob_name = $arr_name[0];
+                                        //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                                        $end_date = Carbon::now()->addMinute(3);
+                                        //$end_date = Carbon::now()->addHour(23)->addMinute(59);
+                                        // $end_date = Carbon::now()->addSecond(12);
+
+                                        $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                                        $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                        $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                                        $data_content['content']['params']['presentation']['slides'][$slideIndex]['elements'][$elementIndex]['action']['params']['files'][0]['path'] = $_blobUrl;
+                                        $modified = true;
+                                        usleep(100);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($modified) {
+                        $jsonData['content'][$key] = $data_content;
+                        usleep(100);
+
+                        $hvp = MdlHvp::findOrFail($id);
+                        $hvp->json_content = json_encode($jsonData);
+                        $hvp->filtered = json_encode($jsonData);
+                        $hvp->save();
+                    }
                 }
             }
 
@@ -2592,6 +2739,31 @@ class TaskController extends Controller
                                 usleep(100);        
                             }
                         }
+                        else if (isset($data_content_02['params']['files'])){
+                            $path = $data_content_02['params']['files'][0]['path'];
+
+                            if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                $file_name = basename($path);
+        
+                                $file_name_rp = str_replace('#', '?', $file_name);
+                                $arr_name = explode('?', $file_name_rp);
+        
+                                $blob_name = $arr_name[0];
+                                //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                                $end_date = Carbon::now()->addMinute(3);
+                                //$end_date = Carbon::now()->addHour(23)->addMinute(59);
+                                // $end_date = Carbon::now()->addSecond(12);
+        
+                                $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+        
+                                $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+        
+                                $jsonData['chapters'][$key]['params']['content'][$key_01][$key_02]['params']['files'][0]['path'] = $_blobUrl;
+        
+                                usleep(100);        
+                            }
+                        }
                     }
                 }
             }
@@ -2600,6 +2772,232 @@ class TaskController extends Controller
             $hvp->json_content = json_encode($jsonData);
             $hvp->filtered = json_encode($jsonData);
             $hvp->save();
+        }
+    }
+
+    public function processInteractive153($jsonData, $id)
+    {
+        if (isset($jsonData['files']) && isset($jsonData['files'][0]) && isset($jsonData['files'][0]['path'])) {
+            $path = $jsonData['files'][0]['path'];
+
+            if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                $file_name = basename($path);
+
+                $file_name_rp = str_replace('#', '?', $file_name);
+                $arr_name = explode('?', $file_name_rp);
+
+                $blob_name = $arr_name[0];
+                //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                $end_date = Carbon::now()->addMinute(30);
+
+                $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                $jsonData['files'][0]['path'] = $_blobUrl;
+
+                $hvp = MdlHvp::findOrFail($id);
+                $hvp->json_content = json_encode($jsonData);
+                $hvp->filtered = json_encode($jsonData);
+                $hvp->save();
+                usleep(200);
+            }
+        }
+    }
+
+    public function processInteractive183($jsonData, $id)
+    {
+        if (isset($jsonData['sentences']) && is_array($jsonData['sentences'])) {
+            foreach ($jsonData['sentences'] as $key => $sentence) {
+                // Process sample audio files
+                if (isset($sentence['sample']) && is_array($sentence['sample'])) {
+                    foreach ($sentence['sample'] as $sampleKey => $sample) {
+                        if (isset($sample['path'])) {
+                            $path = $sample['path'];
+                            if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                $file_name = basename($path);
+                                $file_name_rp = str_replace('#', '?', $file_name);
+                                $arr_name = explode('?', $file_name_rp);
+                                $blob_name = $arr_name[0];
+                                
+                                $end_date = Carbon::now()->addMinute(30);
+                                $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                                $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                                $jsonData['sentences'][$key]['sample'][$sampleKey]['path'] = $_blobUrl;
+                            }
+                        }
+                    }
+                }
+
+                // Process sampleAlternative audio files
+                if (isset($sentence['sampleAlternative']) && is_array($sentence['sampleAlternative'])) {
+                    foreach ($sentence['sampleAlternative'] as $altKey => $altSample) {
+                        if (isset($altSample['path'])) {
+                            $path = $altSample['path'];
+                            if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                $file_name = basename($path);
+                                $file_name_rp = str_replace('#', '?', $file_name);
+                                $arr_name = explode('?', $file_name_rp);
+                                $blob_name = $arr_name[0];
+                                
+                                $end_date = Carbon::now()->addMinute(30);
+                                $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                                $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                                $jsonData['sentences'][$key]['sampleAlternative'][$altKey]['path'] = $_blobUrl;
+                            }
+                        }
+                    }
+                }
+            }
+
+            $hvp = MdlHvp::findOrFail($id);
+            $hvp->json_content = json_encode($jsonData);
+            $hvp->filtered = json_encode($jsonData);
+            $hvp->save();
+            usleep(200);
+        }
+    }
+
+    public function processInteractive176($jsonData, $id)
+    {
+        if (isset($jsonData['exerciseContent']) && 
+            isset($jsonData['exerciseContent']['params']) && 
+            isset($jsonData['exerciseContent']['params']['files']) && 
+            is_array($jsonData['exerciseContent']['params']['files'])) {
+            
+            foreach ($jsonData['exerciseContent']['params']['files'] as $key => $file) {
+                if (isset($file['path'])) {
+                    $path = $file['path'];
+                    if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                        $file_name = basename($path);
+                        $file_name_rp = str_replace('#', '?', $file_name);
+                        $arr_name = explode('?', $file_name_rp);
+                        $blob_name = $arr_name[0];
+                        
+                        $end_date = Carbon::now()->addMinute(30);
+                        $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                        $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                        $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                        $jsonData['exerciseContent']['params']['files'][$key]['path'] = $_blobUrl;
+                    }
+                }
+            }
+
+            $hvp = MdlHvp::findOrFail($id);
+            $hvp->json_content = json_encode($jsonData);
+            $hvp->filtered = json_encode($jsonData);
+            $hvp->save();
+            usleep(200);
+        }
+    }
+
+    public function processInteractive165($jsonData, $id)
+    {
+        // Loop every hotspot
+        if (!empty($jsonData['hotspots']) && is_array($jsonData['hotspots'])) {
+            foreach ($jsonData['hotspots'] as $hIndex => $hotspot) {
+                
+                // Loop every content block in that hotspot
+                if (!empty($hotspot['content']) && is_array($hotspot['content'])) {
+                    foreach ($hotspot['content'] as $cIndex => $content) {
+                        
+                        // Drill into params→sources if present (for videos)
+                        if (!empty($content['params']['sources']) 
+                            && is_array($content['params']['sources'])
+                        ) {
+                            foreach ($content['params']['sources'] as $sIndex => $source) {
+                                
+                                if (!empty($source['path']) 
+                                    && strpos($source['path'], Config::get('constants.domain.CONTAINER_NAME')) !== false
+                                ) {
+                                    // Extract blob name (strip query)
+                                    $originalPath = $source['path'];
+                                    $fileName = basename($originalPath);
+                                    $fileNameClean = str_replace('#', '?', $fileName);
+                                    $parts = explode('?', $fileNameClean);
+                                    $blobName = $parts[0];
+                                    
+                                    // Build new expiry timestamp
+                                    $expiry = Carbon::now()->addMinutes(30);
+                                    $expiry = gmdate('Y-m-d\TH:i:s\Z', strtotime($expiry));
+                                    
+                                    // Generate SAS & new URL
+                                    $sig = $this->getSASForBlob(
+                                        Config::get('constants.domain.ACCOUNT_NAME'),
+                                        Config::get('constants.domain.CONTAINER_NAME'),
+                                        $blobName, 'b', 'r', $expiry,
+                                        Config::get('constants.domain.ACCOUNT_KEY')
+                                    );
+                                    $newUrl = $this->getBlobUrl(
+                                        Config::get('constants.domain.ACCOUNT_NAME'),
+                                        Config::get('constants.domain.CONTAINER_NAME'),
+                                        $blobName, 'b', 'r', $expiry, $sig
+                                    );
+                                    
+                                    // Write it back into jsonData
+                                    $jsonData['hotspots'][$hIndex]['content'][$cIndex]['params']['sources'][$sIndex]['path']
+                                        = $newUrl;
+                                }
+                            }
+                        }
+                        
+                        // Drill into params→files if present (for audio)
+                        if (!empty($content['params']['files']) 
+                            && is_array($content['params']['files'])
+                        ) {
+                            foreach ($content['params']['files'] as $fIndex => $file) {
+                                
+                                if (!empty($file['path']) 
+                                    && strpos($file['path'], Config::get('constants.domain.CONTAINER_NAME')) !== false
+                                ) {
+                                    // Extract blob name (strip query)
+                                    $originalPath = $file['path'];
+                                    $fileName = basename($originalPath);
+                                    $fileNameClean = str_replace('#', '?', $fileName);
+                                    $parts = explode('?', $fileNameClean);
+                                    $blobName = $parts[0];
+                                    
+                                    // Build new expiry timestamp (3 minutes for audio)
+                                    $expiry = Carbon::now()->addMinutes(3);
+                                    $expiry = gmdate('Y-m-d\TH:i:s\Z', strtotime($expiry));
+                                    
+                                    // Generate SAS & new URL
+                                    $sig = $this->getSASForBlob(
+                                        Config::get('constants.domain.ACCOUNT_NAME'),
+                                        Config::get('constants.domain.CONTAINER_NAME'),
+                                        $blobName, 'b', 'r', $expiry,
+                                        Config::get('constants.domain.ACCOUNT_KEY')
+                                    );
+                                    $newUrl = $this->getBlobUrl(
+                                        Config::get('constants.domain.ACCOUNT_NAME'),
+                                        Config::get('constants.domain.CONTAINER_NAME'),
+                                        $blobName, 'b', 'r', $expiry, $sig
+                                    );
+                                    
+                                    // Write it back into jsonData
+                                    $jsonData['hotspots'][$hIndex]['content'][$cIndex]['params']['files'][$fIndex]['path']
+                                        = $newUrl;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Persist the modified JSON
+            $hvp = MdlHvp::findOrFail($id);
+            $hvp->json_content = json_encode($jsonData);
+            $hvp->filtered     = json_encode($jsonData);
+            $hvp->save();
+            usleep(200);
         }
     }
 

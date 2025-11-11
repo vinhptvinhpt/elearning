@@ -193,7 +193,8 @@
           filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
           filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+          versionCheck: false
         },
         options: {
           //http://eonasdan.github.io/bootstrap-datetimepicker/Options/

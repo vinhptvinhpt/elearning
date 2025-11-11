@@ -24,6 +24,11 @@ echo $OUTPUT->header();
                             <h2 class="title"><i class="fa fa-video-camera"></i> VIDEOS LIBRARY</h2>
                         </div>
                         <div class="content-utilities">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" v-model="searchQuery" placeholder="Search by name or type...">
+                                </div>
+                            </div>
                             <div class="page-nav">
                                 <span class="indicator">Refresh:</span>
                                 <div class="btn-group" role="group">
@@ -39,34 +44,51 @@ echo $OUTPUT->header();
                         </div>
                         <div class="drive-wrapper drive-grid-view">
                             <div class="col-md-12">
-                                <template v-for="(video,index) in videos">
-                                    <div class="grid-items-wrapper">
-                                        <div class="drive-item module text-center">
-                                            <div class="drive-item-inner module-inner">
-                                                <div class="drive-item-title"><a class="title-video" :title="video.name">{{ video.name }}</a></div>
-                                                <!-- <div class="drive-item-thumb">
-                                                    <a href=""><i class="fa fa-file-video-o text-warning"></i></a>
-                                                </div> -->
-                                            </div>
-                                            <div class="drive-item-footer module-footer">
-                                                <ul class="utilities list-inline">
-                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
-                                                           data-original-title="Copy link"
-                                                           @click="copyToClipboard(video.name, 'link')"><i
-                                                                class="fa fa-external-link"></i></a>
-                                                    <li v-if="video.stream_link"><a data-toggle="tooltip" data-placement="top" title=""
-                                                           data-original-title="Copy steam link"
-                                                           @click="copyToClipboard(video.stream_link, 'stream_link')"><i
-                                                                class="fa fa-play"></i></a></li>
-                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
-                                                           data-original-title="Copy link"
-                                                           @click="deleteVideo(video.name, video.stream_link)"><i
-                                                                class="fa fa-trash"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
+                                <table class="table table-hover video-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">#</th>
+                                            <th @click="sortBy('name')" style="cursor:pointer;">
+                                                File Name
+                                                <i v-if="sortKey==='name'" :class="sortAsc ? 'fa fa-sort-alpha-asc' : 'fa fa-sort-alpha-desc'"></i>
+                                            </th>
+                                            <th @click="sortBy('type')" style="cursor:pointer;">
+                                                File Type
+                                                <i v-if="sortKey==='type'" :class="sortAsc ? 'fa fa-sort-alpha-asc' : 'fa fa-sort-alpha-desc'"></i>
+                                            </th>
+                                            <th @click="sortBy('upload_time')" style="cursor:pointer;">
+                                                Upload Time
+                                                <i v-if="sortKey==='upload_time'" :class="sortAsc ? 'fa fa-sort-alpha-asc' : 'fa fa-sort-alpha-desc'"></i>
+                                            </th>
+                                            <th style="width: 140px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(video, index) in filteredVideos" :key="video.name">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>
+                                                <span class="video-title" :title="video.name" v-html="highlightedName(video.name)"></span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-info text-uppercase">{{ video.name.split('.').pop() }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="upload-time">{{ formatDate(video.upload_time) }}</span>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="mx-2" data-toggle="tooltip" title="Copy link" @click.prevent="copyToClipboard(video.name, 'link')">
+                                                    <i class="fa fa-external-link"></i>
+                                                </a>
+                                                <a v-if="video.stream_link" href="#" class="mx-2" data-toggle="tooltip" title="Copy stream link" @click.prevent="copyToClipboard(video.stream_link, 'stream_link')">
+                                                    <i class="fa fa-play"></i>
+                                                </a>
+                                                <a href="#" class="mx-2 text-danger" data-toggle="tooltip" title="Delete" @click.prevent="deleteVideo(video.name, video.stream_link)">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
 
                             <div class="col-md-12 d-flex">
@@ -88,14 +110,14 @@ echo $OUTPUT->header();
                                    style="display: inline-block;width: 300px; margin: 10px;height: auto;">
                             <!-- <input type="submit" value="Upload file" name="submit"> -->
                             <button class="btn btn-success btnUpload" type="button" id="btnUpload"
-                                    @click="uploadVideo"><i class="fa fa-plus"></i><i
-                                    class="fa fa-spinner fa-spin"></i> Upload file
+                                    :disabled="isUploading" @click="uploadVideo">
+                                <i class="fa fa-plus"></i><i class="fa fa-spinner fa-spin"></i> Upload file
                             </button>
-                            <span class="div-progress">{{percent}} %</span>
-                            <!-- Progress bar -->
-                            <!--                        <div class="div-progress">-->
-                            <!--                            <progress :value="percent" max="95" style="width: 90%"> </progress> % {{percent}}-->
-                            <!--                        </div>-->
+                            <div class="div-progress" v-show="isUploading" style="display:inline-block; min-width:200px; vertical-align:middle;">
+                                <div class="progress" style="height: 20px; margin-bottom: 0;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" :style="{width: percent + '%'}" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100">{{ percent }}%</div>
+                                </div>
+                            </div>
 
                         </form>
                         <div class="notice">
@@ -135,7 +157,59 @@ echo $OUTPUT->header();
                 file: '',
                 percent: 0,
                 message: "",
-                urlVideo: 'https://elearningdata.blob.core.windows.net/'
+                urlVideo: 'https://elearningdata.blob.core.windows.net/',
+                searchQuery: '',
+                sortKey: 'name',
+                sortAsc: true,
+                isUploading: false,
+            },
+            computed: {
+                filteredVideos() {
+                    let filtered = this.videos.filter(video => {
+                        const name = video.name ? video.name.toLowerCase() : '';
+                        const type = video.name ? video.name.split('.').pop().toLowerCase() : '';
+                        const query = this.searchQuery.toLowerCase();
+                        return name.includes(query) || type.includes(query);
+                    });
+                    
+                    // Apply sorting
+                    filtered.sort((a, b) => {
+                        let aVal, bVal;
+                        
+                        switch(this.sortKey) {
+                            case 'name':
+                                aVal = a.name.toLowerCase();
+                                bVal = b.name.toLowerCase();
+                                break;
+                            case 'type':
+                                aVal = a.name.split('.').pop().toLowerCase();
+                                bVal = b.name.split('.').pop().toLowerCase();
+                                break;
+                            case 'upload_time':
+                                aVal = a.upload_time ? new Date(a.upload_time).getTime() : 0;
+                                bVal = b.upload_time ? new Date(b.upload_time).getTime() : 0;
+                                break;
+                            default:
+                                aVal = a[this.sortKey];
+                                bVal = b[this.sortKey];
+                        }
+                        
+                        if (this.sortAsc) {
+                            return aVal > bVal ? 1 : -1;
+                        } else {
+                            return aVal < bVal ? 1 : -1;
+                        }
+                    });
+                    
+                    return filtered;
+                },
+                highlightedName() {
+                    return (name) => {
+                        if (!this.searchQuery) return name;
+                        const re = new RegExp(`(${this.searchQuery})`, 'gi');
+                        return name.replace(re, '<mark>$1</mark>');
+                    }
+                },
             },
             methods: {
                 onPageChange: function () {
@@ -159,7 +233,10 @@ echo $OUTPUT->header();
                         }
                     })
                         .then(response => {
-                            _this.videos = response.data.videos;
+                            _this.videos = response.data.videos.map(v => ({
+                                ...v,
+                                upload_time: v.upload_time || v.created_at // fallback for naming
+                            }));
                             _this.totalPage = response.data.totalPage;
                             if (currentType == 'reload')
                                 _this.current = 1;
@@ -218,6 +295,7 @@ echo $OUTPUT->header();
 
                     //Upload with blob video created
                     if(validate){
+                        this.isUploading = true;
                         var sasToken = '?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-29T11:45:28Z&st=2020-07-29T03:45:28Z&spr=https&sig=GcW9fcjuCWEaql8U6pe%2FX%2FbRuY9T5OcQXBVifmZ4HnI%3D';
                         var containerURL = 'https://elearningdata.blob.core.windows.net/asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/';
                         const container = new azblob.ContainerURL(containerURL + sasToken, azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
@@ -252,21 +330,33 @@ echo $OUTPUT->header();
                                             toastr['success']("Uploaded videos successfully", "Success");
                                             _this.reloadPage('get');
                                         }
+                                        _this.isUploading = false;
                                     })
                                     .catch(error => {
                                         _this.percent = 0;
                                         $('#btnUpload').removeAttr("disabled");
                                         $('#btnUpload').removeClass('loadding');
                                         toastr['error']("An error occurred, please try again later", "Error");
+                                        _this.isUploading = false;
                                     });
                             }, function (err) {
                                 _this.percent = 0;
                                 $('#btnUpload').removeAttr("disabled");
                                 $('#btnUpload').removeClass('loadding');
                                 toastr['error']("An error occurred, please try again later", "Error");
+                                _this.isUploading = false;
                             });
                         } catch (error) {
                             console.log(error);
+                            $('#btnUpload').removeAttr("disabled");
+                            $('#btnUpload').removeClass('loadding');
+                            _this.isUploading = false;
+                        }
+                        // Always reset loading state in case of unexpected errors
+                        finally {
+                            $('#btnUpload').removeAttr("disabled");
+                            $('#btnUpload').removeClass('loadding');
+                            _this.isUploading = false;
                         }
                     }
                 },
@@ -310,10 +400,10 @@ echo $OUTPUT->header();
                     var size = file.size;
                     var ext = name.toLowerCase().split('.');
                     var fileExt = ext[ext.length - 1];
-                    var extensions = ["webm", "mp4", "ogv"];
+                    var extensions = ["webm", "mp4", "ogv", "mp3"];
                     //validate
                     if (extensions.indexOf(fileExt) < 0) {
-                        alert("Extension not allowed, please choose a video file.");
+                        alert("Extension not allowed, please choose a media file (webm, mp4, ogv, mp3).");
                         const input = this.$refs.file;
                         input.type = 'file';
                         this.$refs.file.value = '';
@@ -325,7 +415,31 @@ echo $OUTPUT->header();
                         return false;
                     }
                     return true;
-                }
+                },
+                sortBy(key) {
+                    if (this.sortKey === key) {
+                        this.sortAsc = !this.sortAsc;
+                    } else {
+                        this.sortKey = key;
+                        this.sortAsc = true;
+                    }
+                },
+                formatDate(timestamp) {
+                    if (!timestamp) return 'N/A';
+                    const date = new Date(timestamp);
+                    const pad = n => n.toString().padStart(2, '0');
+                    let day = pad(date.getDate());
+                    let month = pad(date.getMonth() + 1);
+                    let year = date.getFullYear();
+                    let hours = date.getHours();
+                    let minutes = pad(date.getMinutes());
+                    let seconds = pad(date.getSeconds());
+                    let ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12; // the hour '0' should be '12'
+                    hours = pad(hours);
+                    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+                },
             },
             mounted() {
                 this.reloadPage('get');
@@ -334,6 +448,32 @@ echo $OUTPUT->header();
     </script>
     <style scoped>
         .view-account .content-panel {
+            min-height: auto !important;
+        }
+
+        .video-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        .video-table th, .video-table td {
+            vertical-align: middle !important;
+        }
+        .video-table th[style*='cursor:pointer'] {
+            user-select: none;
+        }
+        .badge-info {
+            background: #17a2b8;
+        }
+        .video-title {
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .mx-2 {
+            margin-left: 0.5rem !important;
+            margin-right: 0.5rem !important;
+        }
+		        .view-account .content-panel {
             min-height: auto !important;
         }
 
@@ -403,6 +543,16 @@ echo $OUTPUT->header();
         }
         .drive-wrapper .drive-item-title{
             max-width: 100% !important;
+        }
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 0.25rem;
+            box-shadow: none;
+        }
+        .progress-bar {
+            transition: width 0.4s ease;
+            font-size: 14px;
+            line-height: 20px;
         }
     </style>
     </body>

@@ -872,12 +872,12 @@ Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController
 Route::get('/api/sendMailCompetencyFramework', 'Api\MailController@sendCompetencyCompleted');
 
 //sync data histaff
-Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization');
-Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
-Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');
+Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization')->middleware('histaff.integration');
+Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser')->middleware('histaff.integration');
+Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI')->middleware('histaff.integration');
 Route::get('/show-survey', 'Backend\SurveyController@viewExport');
 Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLink');
 Route::get('/elearning/auth', 'Backend\HiStaff\SyncDataController@index');
-Route::post('/elearning/v1/auth', 'Backend\HiStaff\SyncDataController@login');
+Route::post('/elearning/v1/auth', 'Backend\HiStaff\SyncDataController@login')->middleware('histaff.integration');
 //Route::get('/api/media-azure', 'Backend\TrainningController@testMediaAzure');
 Route::get('/api/get-media-azure', 'Backend\TrainningController@getMediaLink');

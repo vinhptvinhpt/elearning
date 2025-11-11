@@ -202,6 +202,7 @@ class CourseSendMail extends Mailable
         elseif ($this->activity == TmsNotification::REQUEST_MORE_ATTEMPT) {
             //Passing data via content
             $subject = '[ELEARNING] '. __('request_more_attempt');
+            $subject = '[ELEARNING] '. __('request_more_attempt') . ' ' . $this->course_name;
             $view = 'email.request_more_attempt';
         }
         //fail exam

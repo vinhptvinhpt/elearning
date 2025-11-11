@@ -49,6 +49,7 @@
     $text = str_replace(CourseSendMail::STUDENT, $student, $text);
     $text = str_replace(CourseSendMail::LINK_TO_REVIEW, $url_review, $text);
     $text = str_replace(CourseSendMail::LINK_TO_UNLOCK, $url_unlock, $text);
+    $text = str_replace(CourseSendMail::COURSENAME, $course_name, $text);
 
     echo $text;
     ?>

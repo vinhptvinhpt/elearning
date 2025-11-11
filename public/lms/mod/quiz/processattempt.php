@@ -118,10 +118,10 @@ if ($status == quiz_attempt::OVERDUE) {
     $content = json_encode($noti);
     $quiz_info = new stdClass();
     $quiz_info->quiz_id = $attemptobj->get_quizobj()->get_quiz()->id;
-    $quiz_info->quiz_name = $attemptobj->get_quizobj()->get_quiz()->name;
-    $quiz_info->parent_name = $COURSE->fullname;
+    $quiz_info->quiz_name = str_replace('?', '',$attemptobj->get_quizobj()->get_quiz()->name);
+    $quiz_info->parent_name = str_replace('?', '',$COURSE->fullname);
     // Fullname of user take part in test
-    $quiz_info->object_name = $attemptobj->get_quizobj()->get_quiz()->name;
+    $quiz_info->object_name = str_replace('?', '',$attemptobj->get_quizobj()->get_quiz()->name);
     // Module id of quiz
     $quiz_info->module_id = $attemptobj->get_cm()->id;
     $quiz_info->grade = $attemptobj->get_sum_marks();
