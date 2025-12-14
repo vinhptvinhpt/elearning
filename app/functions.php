@@ -1122,7 +1122,11 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                 'timemodified' => strtotime(Carbon::now())
             ];
             if ($notify && $role_id == Role::ROLE_STUDENT) { //Vi hien tai chi co mau email cho hoc vien nen k gui trong truong hop enrol giao vien
-                insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+                // Check if course has assign_mail_noti enabled before sending notification
+                $course = \App\MdlCourse::find($course_id);
+                if ($course && $course->assign_mail_noti == 1) {
+                    insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+                }
             }
         }
         if (!empty($insert_enrolment_data)) {

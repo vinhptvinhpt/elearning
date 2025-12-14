@@ -137,6 +137,17 @@
                                                     <label v-else class="custom-control-label" for="is_toeic">No</label>
                                                 </div>
                                             </div>
+
+                                            <div class="col-md-4 col-sm-6 form-group">
+                                                <label for="assign_mail_noti">{{trans.get('keys.assign_mail_noti')}}</label>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="assign_mail_noti"
+                                                           :checked="assign_mail_noti==1?true:false" v-model="assign_mail_noti">
+                                                    <label v-if="assign_mail_noti == 1" class="custom-control-label"
+                                                           for="assign_mail_noti">Yes</label>
+                                                    <label v-else class="custom-control-label" for="assign_mail_noti">No</label>
+                                                </div>
+                                            </div>
                                             <!--                                            <div class="col-sm-6 col-md-4 form-group">-->
                                             <!--                                                <div class="pt-40 d-sm-block" style="display: none;">-->
                                             <!--                                                </div>-->
@@ -223,6 +234,7 @@
                 allow_register: 1,
                 libraryid: 0,
                 is_toeic: false,
+                assign_mail_noti: true,
                 string_ip: "",
                 sample: 0, //khóa học mẫu được chọn
                 coursesamples: [], //danh sách khóa học mẫu,
