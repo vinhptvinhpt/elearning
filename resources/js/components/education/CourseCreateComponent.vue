@@ -125,6 +125,16 @@
                         </div>
                       </div>
 
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="assign_mail_noti">{{trans.get('keys.assign_mail_noti')}}</label>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="assign_mail_noti"
+                                 :checked="assign_mail_noti==1?true:false" v-model="assign_mail_noti">
+                          <label v-if="assign_mail_noti == 1" class="custom-control-label" for="assign_mail_noti">Yes</label>
+                          <label v-else class="custom-control-label" for="assign_mail_noti">No</label>
+                        </div>
+                      </div>
+
 <!--                      <div class="col-md-4 col-sm-6 form-group" id="is_end_quiz" style="display:none;">-->
 <!--                        <input v-model="is_end_quiz" type="checkbox" style="width:20px; height:20px;">-->
 <!--                        <label for="is_end_quiz">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>-->
@@ -198,6 +208,7 @@
         allow_register: 1,
         is_end_quiz: 0,
         is_toeic: false,
+        assign_mail_noti: true,
         language: this.trans.get('keys.language'),
         course_budget: 0,
         access_ip: "",

@@ -29,7 +29,8 @@ class MdlCourse extends Model
         'last_modify_user',
         'last_modify_time',
         'last_modify_action',
-        'is_toeic'
+        'is_toeic',
+        'assign_mail_noti'
     ];
 
 //    //Connection to logs

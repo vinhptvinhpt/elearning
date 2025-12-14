@@ -149,6 +149,18 @@
                                                 </div>
                                             </div>
 
+                                            <div class="col-md-4 col-sm-6 form-group">
+                                                <label for="assign_mail_noti">{{trans.get('keys.assign_mail_noti')}}</label>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="assign_mail_noti"
+                                                           :checked="course.assign_mail_noti==1?true:false"
+                                                           v-model="course.assign_mail_noti">
+                                                    <label v-if="course.assign_mail_noti == 1" class="custom-control-label"
+                                                           for="assign_mail_noti">Yes</label>
+                                                    <label v-else class="custom-control-label" for="assign_mail_noti">No</label>
+                                                </div>
+                                            </div>
+
                                             <div class="col-md-4 col-sm-6 form-group d-none">
                                                 <input v-model="course.allow_register" type="checkbox"
                                                        style="width:20px; height:20px;"
